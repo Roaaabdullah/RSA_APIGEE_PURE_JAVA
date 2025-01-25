@@ -1,0 +1,14 @@
+<RaiseFault name='RF-SigningError'>
+  <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+  <FaultResponse>
+    <Set>
+      <Payload contentType='application/json'>{
+  "error" : true,
+  "message" : "{signing_error}"
+}
+</Payload>
+      <StatusCode>500</StatusCode>
+      <ReasonPhrase>Server Error</ReasonPhrase>
+    </Set>
+  </FaultResponse>
+</RaiseFault>

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ProxyEndpoint name="default">
+  <Description>Default Proxy</Description>
+
+  <HTTPProxyConnection>
+    <BasePath>/rsa-crypto</BasePath>
+    <Properties/>
+    <VirtualHost>secure</VirtualHost>
+  </HTTPProxyConnection>
+
+  <FaultRules/>
+  <DefaultFaultRule name="default-fault-rule">
+    <Step>
+      <Name>AM-Inject-Proxy-Revision-Header</Name>
+    </Step>
+    <AlwaysEnforce>true</AlwaysEnforce>
+  </DefaultFaultRule>
+
+  <PreFlow>
+    <Request>
+        <Step>
+          <Name>AM-DemoVariables</Name>
+        </Step>
+    </Request>
+    <Response>
+      <Step>
+        <Name>AM-Clean-Request-Headers-From-Response</Name>
+      </Step>
+    </Response>
+  </PreFlow>
+
+  <PostFlow name="PostFlow">
+      <Response>
+      <Step>
+        <Name>AM-Inject-Proxy-Revision-Header</Name>
+      </Step>
+      </Response>
+  </PostFlow>
+
+  <Flows>
+
+    <Flow name="encrypt 1">
+      <Description>encrypt the plaintext payload</Description>
+      <Request>
+        <Step>
+          <Name>Java-RsaEncrypt1</Name>
+        </Step>
+        <Step>
+          <Name>RF-CryptoError</Name>
+          <Condition>crypto_error != null</Condition>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-SuccessEncryptResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/encrypt1") and (request.verb = "POST")</Condition>
+    </Flow>
+
+    <Flow name="decrypt 1">
+      <Description>decrypt the ciphertext payload</Description>
+      <Request>
+        <Step>
+          <Name>Java-RsaDecrypt1</Name>
+        </Step>
+        <Step>
+          <Name>RF-CryptoError</Name>
+          <Condition>crypto_error != null</Condition>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-SuccessDecryptResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/decrypt1") and (request.verb = "POST")</Condition>
+    </Flow>
+
+
+    <Flow name="encrypt 2">
+      <Description>encrypt the plaintext payload using OAEP padding, base16-encode the result</Description>
+      <Request>
+        <Step>
+          <Name>Java-RsaEncrypt2</Name>
+        </Step>
+        <Step>
+          <Name>RF-CryptoError</Name>
+          <Condition>crypto_error != null</Condition>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-SuccessEncryptResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/encrypt2") and (request.verb = "POST")</Condition>
+    </Flow>
+
+    <Flow name="decrypt 2">
+      <Description>decrypt the ciphertext payload using OAEP</Description>
+      <Request>
+        <Step>
+          <Name>Java-RsaDecrypt2</Name>
+        </Step>
+        <Step>
+          <Name>RF-CryptoError</Name>
+          <Condition>crypto_error != null</Condition>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-SuccessDecryptResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/decrypt2") and (request.verb = "POST")</Condition>
+    </Flow>
+
+    <Flow name="decrypt 3">
+      <Description>decrypt a JWT?</Description>
+      <Request>
+        <Step>
+          <Name>JS-SplitJwt</Name>
+        </Step>
+        <Step>
+          <Name>Java-RsaDecryptCEK</Name>
+        </Step>
+        <Step>
+          <Name>RF-CryptoError</Name>
+          <Condition>crypto_error != null</Condition>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-SuccessDecryptCEKResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/decrypt3") and (request.verb = "POST")</Condition>
+    </Flow>
+
+    <Flow name="sign 1">
+      <Description>sign with PKCS v1.5 padding</Description>
+      <Request>
+        <Step>
+          <Name>Java-RsaSign1</Name>
+        </Step>
+        <Step>
+          <Name>RF-SigningError</Name>
+          <Condition>signing_error != null</Condition>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-SigningResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/sign1") and (request.verb = "POST")</Condition>
+    </Flow>
+
+    <Flow name="verify 1">
+      <Description>verify a signature with PKCS v1.5 padding</Description>
+      <Request>
+        <Step>
+          <Name>Java-RsaVerify1</Name>
+        </Step>
+        <Step>
+          <Name>RF-SigningError</Name>
+          <Condition>signing_error != null</Condition>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-VerifyResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/verify1") and (request.verb = "POST")</Condition>
+    </Flow>
+
+    <Flow name="sign 2">
+      <Description>sign with PSS padding</Description>
+      <Request>
+        <Step>
+          <Name>Java-RsaSignPSS1</Name>
+        </Step>
+        <Step>
+          <Name>RF-SigningError</Name>
+          <Condition>signing_error != null</Condition>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-PSSSigningResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/sign2") and (request.verb = "POST")</Condition>
+    </Flow>
+
+    <Flow name="verify 2">
+      <Description>verify a signature with PSS padding</Description>
+      <Request>
+        <Step>
+          <Name>Java-RsaVerifyPSS1</Name>
+        </Step>
+        <Step>
+          <Name>RF-SigningError</Name>
+          <Condition>signing_error != null</Condition>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-VerifyResponse</Name>
+        </Step>
+      </Response>
+      <Condition>(proxy.pathsuffix MatchesPath "/verify2") and (request.verb = "POST")</Condition>
+    </Flow>
+
+    <Flow name='unknown'>
+      <Description>unknown request</Description>
+      <Request>
+        <Step>
+          <Name>RF-UnknownRequest</Name>
+        </Step>
+      </Request>
+    </Flow>
+  </Flows>
+
+  <RouteRule name="Loopback"/>
+
+</ProxyEndpoint>

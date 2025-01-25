@@ -1,0 +1,12 @@
+<JavaCallout name="Java-RsaEncrypt2">
+  <Properties>
+    <Property name='action'>encrypt</Property>
+    <Property name='padding'>OAEP</Property>
+    <Property name='source'>request.formparam.cleartext</Property>
+    <Property name='public-key'>{my_public_key}</Property>
+    <Property name='encode-result'>base16</Property>
+    <Property name='debug'>true</Property>
+  </Properties>
+  <ClassName>com.google.apigee.callouts.RsaCrypto</ClassName>
+  <ResourceURL>java://apigee-callout-rsa-crypto-20250121.jar</ResourceURL>
+</JavaCallout>

@@ -1,0 +1,10 @@
+<JavaCallout name="Java-RsaEncrypt1">
+  <Properties>
+    <Property name='action'>encrypt</Property>
+    <Property name='debug'>true</Property>
+    <Property name='public-key'>{my_public_key}</Property>
+    <Property name='encode-result'>base64url</Property>
+  </Properties>
+  <ClassName>com.google.apigee.callouts.RsaCrypto</ClassName>
+  <ResourceURL>java://apigee-callout-rsa-crypto-20250121.jar</ResourceURL>
+</JavaCallout>
