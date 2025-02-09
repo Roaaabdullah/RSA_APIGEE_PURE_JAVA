@@ -256,7 +256,7 @@ public class RsaCrypto extends RsaBase implements Execution {
 
       CryptoAction action = getAction(msgCtxt); // encrypt or decrypt
       msgCtxt.setVariable(varName("action"), action.name());
-      msgCtxt.setVariable(varName("custom_java"), "new keys uu!");
+      msgCtxt.setVariable(varName("custom_java"), "new keys!");
 
       if (action == CryptoAction.DECRYPT) {
         byte[] source1 = getSourceBytes(action, msgCtxt);
